@@ -30,7 +30,7 @@ jobs:
         with:
           name: node-app
           path: |
-            server/**/*
+            ./server
             !server/node_modules/**
 
   deploy:
@@ -47,6 +47,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: node-app
+          path: ./server
 
       - name: Login to Azure
         uses: azure/login@v1
