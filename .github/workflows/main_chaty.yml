@@ -22,7 +22,7 @@ jobs:
           node-version: "20.x"
 
       - name: Install dependencies
-        working-directory: ./server 
+        working-directory: ./server
         run: npm install --production
 
       - name: Upload artifact for deployment job
@@ -30,7 +30,6 @@ jobs:
         with:
           name: node-app
           path: |
-            server/.env
             server/**/*
             !server/node_modules/**
 
