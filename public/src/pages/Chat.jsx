@@ -15,44 +15,59 @@ function Chat() {
   const [currentChat, setCurrentChat] = useState(undefined);
   const [currentUser, setCurrentUser] = useState(undefined);
   const [isLoaded, setIsLoaded] = useState(false);
-  useEffect(async () => {
-    if (!localStorage.getItem('chat-app-user')) {
-      navigate("/login");
-    } else {
-      setCurrentUser(
-        await JSON.parse(
-          localStorage.getItem('chat-app-user')));
-      setIsLoaded(true);
-    }
-  }, []);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!localStorage.getItem('chat-app-user')) {
+        navigate("/login");
+      } else {
+        setCurrentUser(
+          await JSON.parse(
+            localStorage.getItem('chat-app-user')));
+        setIsLoaded(true);
+      }
+    };
+
+    fetchUser();
+  }, [navigate]); // <-- Tilføjet 'navigate' til dependencies for at undgå uendelige loops
 
   useEffect(() => {
     if (currentUser) {
       socket.current = io(host);
       socket.current.emit("add-user", currentUser._id);
+
+      return () => {
+        socket.current.disconnect(); // <-- Tilføjet cleanup for socket connection
+      };
     }
   }, [currentUser]);
 
-  useEffect(async () => {
-    if (currentUser) {
-      if (currentUser.isAvatarImageSet) {
-        const data = await axios.get(`${allUsersRoute}/${currentUser._id}`);
-        setContacts(data.data);
-      } else {
-        navigate("/setAvatar");
+  useEffect(() => {
+    const fetchContacts = async () => {
+      if (currentUser) {
+        if (currentUser.isAvatarImageSet) {
+          const data = await axios.get(`${allUsersRoute}/${currentUser._id}`);
+          setContacts(data.data);
+        } else {
+          navigate("/setAvatar");
+        }
       }
-    }
-  }, [currentUser]);
+    };
+
+    fetchContacts();
+  }, [currentUser, navigate]); // <-- Tilføjet 'navigate' til dependencies for at undgå uendelige loops
+
   const handleChatChange = (chat) => {
     setCurrentChat(chat);
   };
+
   return (
       <Container>
         <div className="container">
           <Contacts 
-          contacts={contacts} 
-          currentUser={currentUser} 
-          changeChat = {handleChatChange}
+            contacts={contacts} 
+            currentUser={currentUser} 
+            changeChat={handleChatChange}
           />
           {
             isLoaded && currentChat === undefined ? (
@@ -85,4 +100,5 @@ const Container = styled.div`
     }
   }
 `;
+
 export default Chat;

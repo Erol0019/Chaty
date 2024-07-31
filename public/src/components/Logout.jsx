@@ -10,6 +10,7 @@ export default function Logout() {
   const handleClick = async () => {
       localStorage.clear();
       navigate("/login");
+
   };
   return (
     <Button onClick={handleClick}>

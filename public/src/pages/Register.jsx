@@ -146,7 +146,7 @@ form{
         border-radius: 0.4rem;
         font-size: 1rem;
         text-transform: uppercase;
-        trasition: 0.3s ease-in-out;
+        transition: 0.3s ease-in-out;
         &:hover {
             background-color: #4e0eff;
         }
